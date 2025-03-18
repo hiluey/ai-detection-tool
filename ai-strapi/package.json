@@ -1,0 +1,48 @@
+{
+  "name": "ai-strapi",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Strapi application",
+  "scripts": {
+    "build": "strapi build",
+    "console": "strapi console",
+    "deploy": "strapi deploy",
+    "dev": "strapi develop",
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "strapi": "strapi",
+    "upgrade": "npx @strapi/upgrade latest",
+    "upgrade:dry": "npx @strapi/upgrade latest --dry"
+  },
+  "dependencies": {
+    "@strapi/plugin-cloud": "5.11.2",
+    "@strapi/plugin-users-permissions": "5.11.2",
+    "@strapi/strapi": "^5.11.2",
+    "axios": "^1.8.3",
+    "better-sqlite3": "11.3.0",
+    "postcss": "^8.5.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^6.30.0",
+    "sqlite3": "^5.1.7",
+    "strapi-admin": "^3.6.11",
+    "strapi-helper-plugin": "3.6.11",
+    "styled-components": "^6.1.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.14",
+    "@types/node": "^20.17.24",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "autoprefixer": "^10.4.21",
+    "tailwindcss": "^2.2.19",
+    "typescript": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=18.0.0 <=22.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "uuid": "7e02b876-810e-4549-86c4-7c288fed99d8"
+  }
+}

@@ -1,0 +1,183 @@
+
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+.imgLogin {
+    width: 65%;
+    padding-top: 5%;
+
+}
+.imgConex{
+    width: 75%;
+    padding-top: 25%; 
+   
+
+}
+body {
+    background-color: #fff; /* Fundo da tela branco */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-size: 16px;
+    color: #333;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Login Page Layout */
+.login-container {
+    display: flex;
+    max-width: 900px; /* Reduzi o tamanho da div principal */
+    width: 100%;
+    height: 400px; /* Altura reduzida */
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+/* Aumentando a parte da imagem para 60% do container */
+.login-image {
+    flex: 1.5;
+    background-image: url('/images/undetectable-ai-logo.png');
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+    background: linear-gradient(to right, rgba(240, 240, 240, 1), rgba(240, 240, 240, 0));
+
+    
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+/* Reduzi a largura do login para 40% */
+.login-box {
+    flex: 1;
+    padding: 30px; /* Ajustei para ficar mais proporcional */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h2 {
+    color: #333;
+    font-size: 24px; /* Tamanho reduzido */
+    margin-bottom: 15px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.input-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.login-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px; /* Tamanho reduzido */
+    transition: all 0.3s ease;
+}
+
+.login-input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.login-label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 14px;
+    color: #888;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    background-color: #fff;
+    padding: 0 5px;
+    z-index: 1;
+}
+
+.login-input:focus + .login-label {
+    top: -8px;
+    font-size: 12px;
+    color: #007bff;
+}
+
+.toggle-password-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px; /* Tamanho reduzido */
+    color: #888;
+}
+
+.toggle-password-btn:hover {
+    color: #333;
+}
+
+.login-error {
+    color: red;
+    font-size: 12px; /* Tamanho menor */
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #8f8e8e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.signup {
+    padding-top: 15px;
+    font-size: 14px; /* Tamanho ajustado */
+}
+
+.login-button:hover {
+    background-color: #686868
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        height: auto;
+        width: 80%;
+        max-width: 350px; /* Reduzi ainda mais para telas menores */
+    }
+
+    .login-image {
+        height: 150px; /* Ajustei a altura */
+        background-size: cover;
+    }
+
+    .login-box {
+        padding: 20px;
+    }
+}
