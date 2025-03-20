@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string; // Adicionamos `as string` para garantir que o TypeScript reconheça
+        session.user.id = token.id as string; 
       }
       return session;
     }

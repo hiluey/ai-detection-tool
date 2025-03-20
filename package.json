@@ -5,6 +5,7 @@
   "main": "tailwind.config.js",
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
+    "@types/node-fetch": "^2.6.12",
     "acorn": "^8.14.1",
     "acorn-jsx": "^5.3.2",
     "ajv": "^6.12.6",
@@ -203,6 +204,7 @@
     "natural-compare": "^1.4.0",
     "next": "^15.2.2",
     "next-auth": "^4.24.11",
+    "node-fetch": "^3.3.2",
     "node-releases": "^2.0.19",
     "normalize-range": "^0.1.2",
     "oauth": "^0.9.15",
@@ -348,12 +350,15 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^7.0.2",
     "@types/axios": "^0.9.36",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "22.13.10",
     "@types/react-circular-progressbar": "^1.0.2",
     "autoprefixer": "^10.4.21",
+    "node-polyfill-webpack-plugin": "^4.1.0",
     "postcss": "^8.5.3",
+    "postcss-cli": "^11.0.1",
     "tailwindcss": "^4.0.14"
   }
 }

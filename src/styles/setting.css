@@ -1,0 +1,180 @@
+/* Reset basic styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Container Styles */
+.container {
+  font-family: Arial, sans-serif;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+}
+
+/* Header Styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+}
+
+.header-logo {
+  height: 40px;
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 250px;
+  background-color: #2c3e50;
+  padding-top: 20px;
+  transition: transform 0.3s ease;
+  transform: translateX(-100%);
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar .nav {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.sidebar ul li {
+  margin: 15px 0;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  color: #ecf0f1;
+  display: block;
+  padding: 10px 15px;
+}
+
+.sidebar .logout-button {
+  background-color: #e74c3c;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Main Content Styles */
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
+}
+
+.main-content.expanded {
+  margin-left: 250px;
+}
+
+/* Account Settings */
+.account-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.input-container {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  background-color: #3498db;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+.update-btn {
+  background-color: #2ecc71;
+}
+
+.update-btn:hover {
+  background-color: #27ae60;
+}
+
+.delete-btn {
+  background-color: #e74c3c;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}
+
+/* Password Fields */
+.password-fields .input-container {
+  margin-bottom: 15px;
+}
+
+.password-fields button {
+  background: none;
+  border: none;
+  color: #3498db;
+  cursor: pointer;
+}
+
+.password-fields button:hover {
+  text-decoration: underline;
+}
+
+.back-btn {
+  background-color: transparent;
+  color: #3498db;
+  font-size: 16px;
+  border: none;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.error {
+  color: #e74c3c;
+}
+
+.success {
+  color: #2ecc71;
+}

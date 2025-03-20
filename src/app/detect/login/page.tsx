@@ -1,4 +1,5 @@
-"use client";
+'use client';
+
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
@@ -6,7 +7,7 @@ import "@/styles/login.css";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function Login() {
-    const [username, setUsername] = useState(""); // Campo para o nome de usuário
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -16,36 +17,31 @@ export default function Login() {
         e.preventDefault();
         setError("");
 
-        // Verifica se o nome de usuário e senha foram preenchidos
         if (!username || !password) {
             setError("Username and password are required!");
             return;
         }
 
-        // Verifica se o usuário existe na tabela "users"
         const { data: userData, error: userError } = await supabase
             .from("users")
             .select("*")
             .eq("username", username)
-            .single(); // Acha um único usuário
+            .single();
 
         if (userError || !userData) {
             setError("User not found!");
             return;
         }
 
-        // Tenta autenticar com o email e senha associados ao usuário
         const { data, error } = await supabase.auth.signInWithPassword({
-            email: userData.email, // Pega o email do usuário
+            email: userData.email,
             password,
         });
 
         if (error) {
             setError(error.message);
         } else {
-            // Armazena o token de sessão no cookie
             document.cookie = `supabaseToken=${data.session.access_token}; path=/;`;
-
             router.push("/detect");
         }
     };
@@ -72,8 +68,9 @@ export default function Login() {
                             onChange={(e) => setUsername(e.target.value)}
                             className="login-input"
                             required
+                            placeholder=" "
                         />
-                        <label htmlFor="username" className="login-label">Username</label>
+                        <label htmlFor="username" className={`login-label ${username ? 'filled' : ''}`}>Username</label>
                     </div>
 
                     <div className="input-container">
@@ -84,8 +81,9 @@ export default function Login() {
                             onChange={(e) => setPassword(e.target.value)}
                             className="login-input"
                             required
+                            placeholder=" "
                         />
-                        <label htmlFor="password" className="login-label">Password</label>
+                        <label htmlFor="password" className={`login-label ${password ? 'filled' : ''}`}>Password</label>
                         <button
                             type="button"
                             className="toggle-password-btn"

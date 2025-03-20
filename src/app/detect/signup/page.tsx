@@ -1,4 +1,5 @@
-"use client";
+'use client';
+
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
@@ -9,7 +10,7 @@ export default function Signup() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [username, setUsername] = useState(""); // Campo para o nome de usuário
+    const [username, setUsername] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -20,13 +21,11 @@ export default function Signup() {
         setError("");
         setSuccess("");
 
-        // Verifica se os campos estão vazios
         if (!name || !email || !password || !username) {
             setError("All fields are required!");
             return;
         }
 
-        // Faz o cadastro
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
@@ -35,12 +34,10 @@ export default function Signup() {
         if (error) {
             setError(error.message);
         } else {
-            // Verifica se data e data.user existem
             if (data && data.user) {
-                // Cadastra o usuário na tabela customizada "users"
                 const { error: userError } = await supabase
                     .from("users")
-                    .insert([{ username, email, id: data.user.id }]); // Armazenando nome de usuário
+                    .insert([{ username, email, id: data.user.id }]);
 
                 if (userError) {
                     setError(userError.message);
@@ -48,7 +45,7 @@ export default function Signup() {
                     setSuccess("Registration successful! Redirecting...");
                     setTimeout(() => {
                         router.push("/detect/login");
-                    }, 2000); // Redireciona após 2 segundos
+                    }, 2000);
                 }
             } else {
                 setError("User creation failed. Please try again.");
@@ -78,8 +75,9 @@ export default function Signup() {
                             onChange={(e) => setName(e.target.value)}
                             className="signup-input"
                             required
+                            placeholder=" "
                         />
-                        <label htmlFor="name" className="signup-label">
+                        <label htmlFor="name" className={`signup-label ${name ? 'filled' : ''}`}>
                             Name <span className="required">*</span>
                         </label>
                     </div>
@@ -92,8 +90,9 @@ export default function Signup() {
                             onChange={(e) => setUsername(e.target.value)}
                             className="signup-input"
                             required
+                            placeholder=" "
                         />
-                        <label htmlFor="username" className="signup-label">
+                        <label htmlFor="username" className={`signup-label ${username ? 'filled' : ''}`}>
                             Username <span className="required">*</span>
                         </label>
                     </div>
@@ -106,8 +105,9 @@ export default function Signup() {
                             onChange={(e) => setEmail(e.target.value)}
                             className="signup-input"
                             required
+                            placeholder=" "
                         />
-                        <label htmlFor="email" className="signup-label">
+                        <label htmlFor="email" className={`signup-label ${email ? 'filled' : ''}`}>
                             Email <span className="required">*</span>
                         </label>
                     </div>
@@ -120,8 +120,9 @@ export default function Signup() {
                             onChange={(e) => setPassword(e.target.value)}
                             className="signup-input"
                             required
+                            placeholder=" "
                         />
-                        <label htmlFor="password" className="signup-label">
+                        <label htmlFor="password" className={`signup-label ${password ? 'filled' : ''}`}>
                             Password <span className="required">*</span>
                         </label>
                         <button

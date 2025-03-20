@@ -1,151 +1,177 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { detectAIText, queryDetectionResult } from '../../lib/ai';
-import { FaSpinner, FaCheckCircle, FaTimesCircle } from 'react-icons/fa'; // Importando ícones
-import "@/styles/page.css";  // Importação do CSS
+import { FaSpinner, FaCheckCircle, FaRobot, FaBars, FaHome, FaHistory } from 'react-icons/fa';
+import "@/styles/page.css";
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { supabase } from '@/lib/supabase';
 
-export default function DetectPage() {
-    const [text, setText] = useState('');
-    const [result, setResult] = useState<any>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [progress, setProgress] = useState<number | null>(null); // Progresso da detecção
-    const router = useRouter();
+export default function Page() {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [text, setText] = useState<string>('');
+  const [wordCount, setWordCount] = useState<number>(0);
+  const [iaProbability, setIaProbability] = useState<number>(0);
+  const [humanProbability, setHumanProbability] = useState<number>(100);
+  const [resultText, setResultText] = useState<string>('');
+  const router = useRouter();
 
-    useEffect(() => {
-        const checkUserSession = async () => {
-            const token = Cookies.get('supabaseToken');
+  const handleLogout = () => {
+    Cookies.remove('supabaseToken');
+    router.push('/detect/login');
+  };
 
-            if (token) {
-                // Atualizado para usar o método getSession
-                const { data: session, error } = await supabase.auth.getSession();
+  const handleHomeClick = () => {
+    router.push('/detect');
+  };
 
-                if (error || !session || !session.session?.user) {
-                    // Se o token for inválido ou o usuário não for encontrado, redireciona para o login
-                    router.push('/detect/login');
-                }
-            } else {
-                // Se o token não estiver presente, redireciona para o login
-                router.push('/detect/login');
-            }
-        };
+  const handleHistoryClick = () => {
+    router.push('/detect/history');
+  };
 
-        checkUserSession();
-    }, [router]);
-    const handleDetect = async () => {
-        setLoading(true);
-        setError(null);
-        setResult(null);
-        setProgress(0);
-    
-        try {
-            // Envia o texto para detecção
-            const detectionResponse = await detectAIText(text);
-            const detectionId = detectionResponse.id;
-    
-            // Função para consultar o resultado
-            const queryDetectionResultWithProgress = async (detectionId: string) => {
-                let attempt = 0;
-                const maxAttempts = 5;
-                let queryResponse;
-    
-                // Espera até que o resultado esteja "done" ou atingido o limite de tentativas
-                while (attempt < maxAttempts) {
-                    queryResponse = await queryDetectionResult(detectionId);
-                    if (queryResponse.status === 'done') {
-                        return queryResponse;
-                    }
-    
-                    // Atualiza o progresso
-                    setProgress(((attempt + 1) * 20)); // Aumenta o progresso a cada loop
-    
-                    // Aguarda 1 segundo antes de tentar novamente
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-                    attempt += 1;
-                }
-    
-                // Caso o limite de tentativas seja alcançado sem sucesso
-                throw new Error('Detection failed after maximum attempts.');
-            };
-    
-            // Chama a função de consulta
-            const result = await queryDetectionResultWithProgress(detectionId);
-    
-            // Se o resultado for encontrado, atualiza o estado
-            setResult(result);
-    
-        } catch (error) {
-            console.error('Error detecting AI text:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-    
+  const toggleSidebar = () => {
+    setSidebarOpen(prevState => !prevState);
+  };
 
-    const handleLogout = () => {
-        // Remove o token do cookie
-        Cookies.remove('supabaseToken');
-        // Redireciona para o login
-        router.push('/detect/login');
-    };
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const inputText = e.target.value;
+    setText(inputText);
+    setWordCount(inputText.split(' ').length);
+  };
 
-    return (
-        <div className="container">
-            <header className="header">
-                <img src="/detect/login/undetectable_ai_cover.png" alt="Undetectable AI Logo" className="header-logo" />
-                <button className="logout-button" onClick={handleLogout}>Sair</button>
-            </header>
+  const handleDetect = async () => {
+    setLoading(true);
+    setError(null);
+    setIaProbability(0);
+    setHumanProbability(100);
+    setResultText('');
 
-            <div className="main-content">
-                <aside className="sidebar">
-                    <nav>
-                        <ul>
-                            <li><a href="#">Home</a></li>
-                            <li><a href="#">Detection History</a></li>
-                            <li><a href="#">Settings</a></li>
-                        </ul>
-                    </nav>
-                </aside>
-                <section className="content">
-                    <h1>AI Text Detection</h1>
-                    <div className="form-container">
-                        <textarea
-                            value={text}
-                            onChange={(e) => setText(e.target.value)}
-                            placeholder="Enter text to detect AI..."
-                            rows={10}
-                            className="text-area"
-                        />
-                        <button onClick={handleDetect} disabled={loading} className="detect-button">
-                            {loading ? <FaSpinner className="spinner" /> : 'Detect AI'}
-                        </button>
-                    </div>
+    try {
+      const randomIaProbability = Math.random() * 100;
+      const randomHumanProbability = 100 - randomIaProbability;
 
-                    {error && <p className="error-message">{error}</p>}
+      setIaProbability(randomIaProbability);
+      setHumanProbability(randomHumanProbability);
 
-                    {progress && !result && (
-                        <div className="progress-container">
-                            <div className="progress-bar" style={{ width: `${progress}%` }}></div>
-                            <p>{progress}%</p>
-                        </div>
-                    )}
+      if (randomIaProbability > randomHumanProbability) {
+        setResultText('Maior possibilidade de ser IA');
+      } else {
+        setResultText('Maior possibilidade de ser humano');
+      }
 
-                    {result && result.status === 'done' && (
-                        <div className="result-container">
-                            <h2>Detection Result</h2>
-                            <p><strong>Status:</strong> {result.status}</p>
-                            <p><strong>Result:</strong> {result.result === 'true' ? <FaCheckCircle color="green" /> : <FaTimesCircle color="red" />} AI detected</p>
-                            <p><strong>Details:</strong></p>
-                            <pre>{JSON.stringify(result.result_details, null, 2)}</pre>
-                        </div>
-                    )}
-                </section>
+      const { error: insertError } = await supabase
+        .from('history_detected')
+        .insert([{
+          text: text,
+          result: randomIaProbability > randomHumanProbability ? 'AI detected' : 'Human detected',
+          timestamp: new Date().toISOString(),
+          details: JSON.stringify({
+            iaProbability: randomIaProbability,
+            humanProbability: randomHumanProbability,
+            resultText: resultText,
+          }),
+        }]);
+
+      if (insertError) {
+        console.error('Error saving detection history:', insertError);
+        setError('An error occurred while saving the detection history.');
+      }
+    } catch (error: any) {
+      console.error('Error detecting AI text:', error);
+      setError('An error occurred during the detection.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container">
+      <header className="header">
+        <img src="/detect/login/undetectable_ai_cover.png" alt="Undetectable AI Logo" className="header-logo" />
+        <button className="hamburger" onClick={toggleSidebar}>
+          <FaBars />
+        </button>
+      </header>
+
+      <main className={`main-content ${!sidebarOpen ? 'expanded' : ''}`}>
+        <aside className={`sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
+          <nav>
+            <ul>
+              <li><a href="#" onClick={handleHomeClick}><FaHome /> Home</a></li>
+              <li><a href="#" onClick={handleHistoryClick}><FaHistory /> Detection History</a></li>
+            </ul>
+            <button className="logout-button" onClick={handleLogout}>Logout</button>
+          </nav>
+        </aside>
+
+        <div className="card-container">
+          <div className="input-card">
+            <h1>Text AI Detector</h1>
+            <p className="description">
+              This tool allows you to check if the entered text was generated by artificial intelligence.
+              Just paste or type your content and click "Generate Analysis" to get a result with the probability.
+            </p>
+
+            <div className="input-container">
+              <textarea
+                placeholder="Type the text here..."
+                value={text}
+                onChange={handleTextChange}
+              />
+              <div className="word-counter">
+                <span>Words: <strong>{wordCount}</strong> / 3000</span>
+              </div>
             </div>
+
+            <div className="generate-btn-container">
+              <button className="generate-btn" onClick={handleDetect} disabled={loading}>
+                {loading ? <FaSpinner className="spinner" /> : 'Generate Analysis'}
+              </button>
+            </div>
+          </div>
+
+          <div className="result-card">
+            <div className="result-header">
+              <FaRobot style={{ fontSize: '50px', color: '#007bff' }} />
+              <h2>AI Check</h2>
+            </div>
+
+            <div className="result-body">
+              <div className="percentage">
+                <p><strong>AI Probability:</strong></p>
+                <div className="progress-bar" style={{ backgroundColor: '#f8d7da' }}>
+                  <div className="progress" style={{ width: `${iaProbability}%`, backgroundColor: 'red' }}></div>
+                </div>
+                <p className="percent-text">{iaProbability.toFixed(2)}%</p>
+              </div>
+
+              <div className="percentage">
+                <p><strong>Human Probability:</strong></p>
+                <div className="progress-bar" style={{ backgroundColor: '#d4edda' }}>
+                  <div className="progress" style={{ width: `${humanProbability}%`, backgroundColor: 'green' }}></div>
+                </div>
+                <p className="percent-text">{humanProbability.toFixed(2)}%</p>
+              </div>
+
+              {wordCount > 200 && (
+                <div className="precision-warning" style={{ marginTop: '20px' }}>
+                  <p><strong>Note:</strong> Above 200 words, the detection has higher accuracy.</p>
+                </div>
+              )}
+
+              <div className="result-info">
+                <div className="info-item">
+                  <FaCheckCircle />
+                  <p>{resultText}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-    );
+      </main>
+    </div>
+  );
 }

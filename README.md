@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+While trying to use the provided API, I noticed a mismatch.
+The detect API provided the ID, and the query received it, but it remained in a pending state. For small texts, it worked but lacked accuracy. However, for texts with 200 words or even just 10 words, it didn't work at all. The query status remained "pending" even after multiple requests (without changing the ID) and waiting for processing—it never changed.
 
-## Getting Started
+I conducted numerous tests, but nothing worked. To meet the deadline, I created a simulated detector that provides random detections without a real basis.
 
-First, run the development server:
+## App Access Credentials:
+User: user
+Password: mudar123!
 
-```bash
+
+In the app, it is possible to create new users. To create one, simply sign up, and Supabase will send a link. By clicking on the link, your email will be verified, and you will be able to access the project.
+
+
+Technologies Used:
+Next.js
+React
+Tailwind CSS
+CSS
+TypeScript
+Supabase
+Prisma
+Stapri
+
+Project Structure:
+The application follows the recommended Next.js structure, with the app folder containing the main pages and components.
+
+Main Application Page:
+src\app\detect\page.tsx
+src\styles\page.css
+Login Page:
+src\app\detect\login
+src\styles\login.css
+Signup Page:
+src\app\detect\signup
+src\styles\signup.css
+History Page:
+src\app\detect\history
+src\styles\history.css
+I also created a settings page, already enabled with Supabase, but since the front-end wasn't ready in time, I didn't add an option for users to access it.
+
+API & Supabase Configurations:
+Located in:
+
+src\lib
+I didn't use the ai.ts class because the API was supposedly malfunctioning.
+
+How to Run the Application:
+Install dependencies:
+bash
+Copiar código
+npm install
+Run the development server:
+bash
+Copiar código
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open in your browser:
+http://localhost:3000/detect/login
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deployment:
+The application is hosted on Vercel.

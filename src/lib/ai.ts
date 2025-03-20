@@ -1,6 +1,6 @@
 // C:\Users\giova\ai-detection-tool\src\lib\ai.ts
 
-const API_KEY = '7c0c5579-6e66-4823-a566-d6d38c3c808e';
+const API_KEY = 'b0b39627-eee8-47a9-a559-797ada1c85ef';
 const DETECT_URL = 'https://ai-detect.undetectable.ai/detect';
 const QUERY_URL = 'https://ai-detect.undetectable.ai/query';
 

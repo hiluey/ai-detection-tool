@@ -1,6 +1,3 @@
-
-
-/* Global Styles */
 * {
     margin: 0;
     padding: 0;
@@ -11,16 +8,15 @@
 .imgLogin {
     width: 65%;
     padding-top: 5%;
-
 }
-.imgConex{
+
+.imgConex {
     width: 75%;
-    padding-top: 25%; 
-   
-
+    padding-top: 25%;
 }
+
 body {
-    background-color: #fff; /* Fundo da tela branco */
+    background-color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -38,19 +34,17 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Login Page Layout */
 .login-container {
     display: flex;
-    max-width: 900px; /* Reduzi o tamanho da div principal */
+    max-width: 900px;
     width: 100%;
-    height: 400px; /* Altura reduzida */
+    height: 400px;
     overflow: hidden;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     background-color: #fff;
 }
 
-/* Aumentando a parte da imagem para 60% do container */
 .login-image {
     flex: 1.5;
     background-image: url('/images/undetectable-ai-logo.png');
@@ -58,16 +52,13 @@ a:hover {
     background-position: center;
     height: 100%;
     background: linear-gradient(to right, rgba(240, 240, 240, 1), rgba(240, 240, 240, 0));
-
-    
     border-top-left-radius: 12px;
     border-bottom-left-radius: 12px;
 }
 
-/* Reduzi a largura do login para 40% */
 .login-box {
     flex: 1;
-    padding: 30px; /* Ajustei para ficar mais proporcional */
+    padding: 30px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -75,7 +66,7 @@ a:hover {
 
 h2 {
     color: #333;
-    font-size: 24px; /* Tamanho reduzido */
+    font-size: 24px;
     margin-bottom: 15px;
     font-weight: 600;
     text-align: center;
@@ -91,7 +82,7 @@ h2 {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 14px; /* Tamanho reduzido */
+    font-size: 14px;
     transition: all 0.3s ease;
 }
 
@@ -105,7 +96,6 @@ h2 {
     top: 10px;
     left: 10px;
     font-size: 14px;
-    color: #888;
     transition: all 0.3s ease;
     pointer-events: none;
     background-color: #fff;
@@ -127,7 +117,7 @@ h2 {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 18px; /* Tamanho reduzido */
+    font-size: 18px;
     color: #888;
 }
 
@@ -137,7 +127,7 @@ h2 {
 
 .login-error {
     color: red;
-    font-size: 12px; /* Tamanho menor */
+    font-size: 12px;
     text-align: center;
     margin-bottom: 12px;
 }
@@ -156,28 +146,34 @@ h2 {
 
 .signup {
     padding-top: 15px;
-    font-size: 14px; /* Tamanho ajustado */
+    font-size: 14px;
 }
 
 .login-button:hover {
-    background-color: #686868
+    background-color: #686868;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .login-container {
         flex-direction: column;
         height: auto;
         width: 80%;
-        max-width: 350px; /* Reduzi ainda mais para telas menores */
+        max-width: 350px;
     }
 
     .login-image {
-        height: 150px; /* Ajustei a altura */
+        height: 150px;
         background-size: cover;
     }
 
     .login-box {
         padding: 20px;
     }
+}
+
+.login-input:not(:placeholder-shown) + .login-label,
+.login-input:focus + .login-label {
+    top: -8px;
+    font-size: 12px;
+    color: #007bff;
 }
