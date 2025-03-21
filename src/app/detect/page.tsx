@@ -1,97 +1,175 @@
 'use client';
-
 import { useState, useEffect } from 'react';
-import { FaSpinner, FaCheckCircle, FaRobot, FaBars, FaHome, FaHistory } from 'react-icons/fa';
-import "@/styles/page.css";
+import axios from 'axios';
+import { FaRobot, FaBrain, FaFileAlt, FaCogs, FaBars, FaHome, FaHistory } from 'react-icons/fa';
+import '../../styles/page.css';  
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '../../lib/supabase';
 
-export default function Page() {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
-  const [isMounted, setIsMounted] = useState<boolean>(false);
-  const [text, setText] = useState<string>('');
-  const [wordCount, setWordCount] = useState<number>(0);
-  const [iaProbability, setIaProbability] = useState<number>(0);
-  const [humanProbability, setHumanProbability] = useState<number>(100);
-  const [resultText, setResultText] = useState<string>('');
+interface QueryResult {
+  id: string;
+  model: string;
+  result: number;
+  result_details: {
+    scoreGptZero: number;
+    scoreOpenAI: number;
+    scoreWriter: number;
+    scoreCrossPlag: number;
+    scoreCopyLeaks: number;
+    scoreSapling: number;
+    scoreContentAtScale: number;
+    scoreZeroGPT: number;
+    human: number;
+  };
+  status: string;
+  retry_count: number;
+}
+
+const DetectPage = () => {
+  const [text, setText] = useState('');
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<QueryResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isQueryPending, setIsQueryPending] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [resultDetails, setResultDetails] = useState<QueryResult['result_details']>({
+    scoreGptZero: 0,
+    scoreOpenAI: 0,
+    scoreWriter: 0,
+    scoreCrossPlag: 0,
+    scoreCopyLeaks: 0,
+    scoreSapling: 0,
+    scoreContentAtScale: 0,
+    scoreZeroGPT: 0,
+    human: 0,
+  });
 
-  const handleLogout = () => {
-    Cookies.remove('supabaseToken');
-    router.push('/detect/login');
-  };
-
-  const handleHomeClick = () => {
-    router.push('/detect');
-  };
-
-  const handleHistoryClick = () => {
-    router.push('/detect/history');
-  };
-
-  const toggleSidebar = () => {
-    setSidebarOpen(prevState => !prevState);
-  };
-
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const inputText = e.target.value;
-    setText(inputText);
-    setWordCount(inputText.split(' ').length);
-  };
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleDetect = async () => {
     setLoading(true);
     setError(null);
-    setIaProbability(0);
-    setHumanProbability(100);
-    setResultText('');
+    setIsQueryPending(true);
+    setProgress(0);
 
     try {
-      const randomIaProbability = Math.random() * 100;
-      const randomHumanProbability = 100 - randomIaProbability;
+      const detectionResponse = await axios.post('/api/detect', { text });
+      const { id } = detectionResponse.data;
 
-      setIaProbability(randomIaProbability);
-      setHumanProbability(randomHumanProbability);
+      simulateLoadingProgress();
 
-      if (randomIaProbability > randomHumanProbability) {
-        setResultText('Maior possibilidade de ser IA');
-      } else {
-        setResultText('Maior possibilidade de ser humano');
+      await pollQueryStatus(id);
+
+      const { ai, human } = calculateHumanVsAI(result?.result || 0);
+
+      const resultString = detectionResult(ai, human);
+
+      const { data, error } = await supabase
+        .from('historyD')
+        .insert([
+          {
+            text: text,
+            result: resultString,
+            timestamp: new Date().toISOString(),
+          },
+        ]);
+
+      if (error) {
+        throw error;
       }
 
-      const { error: insertError } = await supabase
-        .from('history_detected')
-        .insert([{
-          text: text,
-          result: randomIaProbability > randomHumanProbability ? 'AI detected' : 'Human detected',
-          timestamp: new Date().toISOString(),
-          details: JSON.stringify({
-            iaProbability: randomIaProbability,
-            humanProbability: randomHumanProbability,
-            resultText: resultText,
-          }),
-        }]);
-
-      if (insertError) {
-        console.error('Error saving detection history:', insertError);
-        setError('An error occurred while saving the detection history.');
-      }
-    } catch (error: any) {
-      console.error('Error detecting AI text:', error);
-      setError('An error occurred during the detection.');
+      console.log('Result saved successfully:', data);
+    } catch (error) {
+      console.error('Error during detection:', error);
+      setError('Error during detection. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const simulateLoadingProgress = () => {
+    let currentProgress = 0;
+    const interval = setInterval(() => {
+      currentProgress += 5;
+      setProgress(currentProgress);
+
+      if (currentProgress >= 100) {
+        clearInterval(interval);
+      }
+    }, 100);
+  };
+
+  const pollQueryStatus = async (id: string) => {
+    let attempts = 0;
+    const maxAttempts = 5;
+
+    while (attempts < maxAttempts) {
+      try {
+        const queryResponse = await axios.post('/api/query', { id });
+
+        if (queryResponse.data.status === 'done') {
+          setResult(queryResponse.data);
+          setIsQueryPending(false);
+          setResultDetails(queryResponse.data.result_details);
+          return;
+        }
+
+        attempts++;
+        console.log(`Attempt ${attempts}: Status still ${queryResponse.data.status}, retrying...`);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } catch (error) {
+        console.error('Error checking query status:', error);
+        setError('Error checking status. Please try again.');
+        setIsQueryPending(false);
+        return;
+      }
+    }
+
+    setError('Unable to retrieve result after multiple attempts.');
+    setIsQueryPending(false);
+  };
+
+  const calculateHumanVsAI = (result: number) => {
+    const ai = result;
+    const human = 100 - result;
+    return { ai, human };
+  };
+
+  const detectionResult = (ai: number, human: number) => {
+    if (ai > 50) {
+      return "AI Generated";
+    } else if (human > 50) {
+      return "Human Generated";
+    } else {
+      return "Undetermined";
+    }
+  };
+
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const handleHomeClick = () => {
+    router.push('/detect');
+  };
+
+  const handleHistoryClick = () => {
+      router.push('/detect/history');
+  };
+  const handleLogout = () => {
+      Cookies.remove('supabaseToken');
+      router.push('/detect/login');
+  };
+
+  const { human, ai } = result ? calculateHumanVsAI(result.result) : { human: 0, ai: 0 };
+
   return (
     <div className="container">
       <header className="header">
         <img src="/detect/login/undetectable_ai_cover.png" alt="Undetectable AI Logo" className="header-logo" />
-        <button className="hamburger" onClick={toggleSidebar}>
+        <button
+          className={`hamburger ${sidebarOpen ? 'active' : ''}`}
+          onClick={toggleSidebar}
+        >
           <FaBars />
         </button>
       </header>
@@ -119,16 +197,17 @@ export default function Page() {
               <textarea
                 placeholder="Type the text here..."
                 value={text}
-                onChange={handleTextChange}
+                onChange={(e) => setText(e.target.value)}
+                className="textarea"
               />
               <div className="word-counter">
-                <span>Words: <strong>{wordCount}</strong> / 3000</span>
+                <span>Words: <strong>{text.length}</strong> / 3000</span>
               </div>
             </div>
 
             <div className="generate-btn-container">
-              <button className="generate-btn" onClick={handleDetect} disabled={loading}>
-                {loading ? <FaSpinner className="spinner" /> : 'Generate Analysis'}
+              <button className="generate-btn" onClick={handleDetect} disabled={loading || isQueryPending}>
+                {loading ? 'Detecting...' : isQueryPending ? 'Querying...' : 'Generate Analysis'}
               </button>
             </div>
           </div>
@@ -143,35 +222,51 @@ export default function Page() {
               <div className="percentage">
                 <p><strong>AI Probability:</strong></p>
                 <div className="progress-bar" style={{ backgroundColor: '#f8d7da' }}>
-                  <div className="progress" style={{ width: `${iaProbability}%`, backgroundColor: 'red' }}></div>
+                  <div className="progress" style={{ width: `${ai}%`, backgroundColor: 'red' }}></div>
                 </div>
-                <p className="percent-text">{iaProbability.toFixed(2)}%</p>
+                <p className="percent-text">{ai.toFixed(2)}%</p>
               </div>
 
               <div className="percentage">
                 <p><strong>Human Probability:</strong></p>
                 <div className="progress-bar" style={{ backgroundColor: '#d4edda' }}>
-                  <div className="progress" style={{ width: `${humanProbability}%`, backgroundColor: 'green' }}></div>
+                  <div className="progress" style={{ width: `${human}%`, backgroundColor: 'green' }}></div>
                 </div>
-                <p className="percent-text">{humanProbability.toFixed(2)}%</p>
-              </div>
-
-              {wordCount > 200 && (
-                <div className="precision-warning" style={{ marginTop: '20px' }}>
-                  <p><strong>Note:</strong> Above 200 words, the detection has higher accuracy.</p>
-                </div>
-              )}
-
-              <div className="result-info">
-                <div className="info-item">
-                  <FaCheckCircle />
-                  <p>{resultText}</p>
-                </div>
+                <p className="percent-text">{human.toFixed(2)}%</p>
               </div>
             </div>
           </div>
         </div>
+
+        <div className="model-details-container">
+          {Object.entries(resultDetails).map(([key, value]) => (
+            <div key={key} className="model-detail-card">
+              <div className="card-header">
+                {key === 'scoreCopyLeaks' && <FaFileAlt />}
+                {key === 'scoreSapling' && <FaCogs />}
+                {key === 'scoreWriter' && <FaBrain />}
+                {key === 'scoreGptZero' && <FaRobot />}
+                {key === 'scoreOpenAI' && <FaRobot />}
+                {key === 'scoreCrossPlag' && <FaFileAlt />}
+                {key === 'scoreContentAtScale' && <FaCogs />}
+                {key === 'scoreZeroGPT' && <FaRobot />}
+                {key === 'human' && <FaBrain />}
+                <h5>{key}</h5>
+              </div>
+              <div className="card-body">
+                <div className="score">
+                  <div className="meter" style={{ width: `${progress}%` }}></div>
+                </div>
+                <div>{progress < 100 ? `${progress}%` : `${value}%`}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {error && <div className="error">{error}</div>}
       </main>
     </div>
   );
-}
+};
+
+export default DetectPage;

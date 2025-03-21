@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { FaBars, FaHome, FaHistory } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '../../../lib/supabase'; 
 import Cookies from 'js-cookie';
 import "@/styles/history.css";
 
@@ -11,7 +11,6 @@ interface HistoryItem {
     text: string;
     result: string;
     timestamp: string;
-    details: string;
 }
 
 export default function HistoryPage() {
@@ -53,8 +52,8 @@ export default function HistoryPage() {
         const fetchHistory = async () => {
             try {
                 const { data, error } = await supabase
-                    .from('history_detected')
-                    .select('id, text, result, timestamp, details')
+                    .from('historyD')
+                    .select('id, text, result, timestamp')
                     .order('timestamp', { ascending: false });
 
                 if (error) {
@@ -124,7 +123,6 @@ export default function HistoryPage() {
                                     <th>Text</th>
                                     <th>Result</th>
                                     <th>Timestamp</th>
-                                    <th>Details</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -134,7 +132,6 @@ export default function HistoryPage() {
                                         <td>{item.text}</td>
                                         <td>{item.result}</td>
                                         <td>{new Date(item.timestamp).toLocaleString()}</td>
-                                        <td>{formatDetails(item.details)}</td>
                                     </tr>
                                 ))}
                             </tbody>

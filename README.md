@@ -1,7 +1,3 @@
-While trying to use the provided API, I noticed a mismatch.
-The detect API provided the ID, and the query received it, but it remained in a pending state. For small texts, it worked but lacked accuracy. However, for texts with 200 words or even just 10 words, it didn't work at all. The query status remained "pending" even after multiple requests (without changing the ID) and waiting for processing—it never changed.
-
-I conducted numerous tests, but nothing worked. To meet the deadline, I created a simulated detector that provides random detections without a real basis.
 
 ## App Access Credentials:
 User: user
@@ -42,7 +38,7 @@ API & Supabase Configurations:
 Located in:
 
 src\lib
-I didn't use the ai.ts class because the API was supposedly malfunctioning.
+
 
 How to Run the Application:
 Install dependencies:

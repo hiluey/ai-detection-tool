@@ -1,46 +1,37 @@
-// C:\Users\giova\ai-detection-tool\src\lib\ai.ts
+import axios from 'axios';
 
-const API_KEY = 'b0b39627-eee8-47a9-a559-797ada1c85ef';
-const DETECT_URL = 'https://ai-detect.undetectable.ai/detect';
-const QUERY_URL = 'https://ai-detect.undetectable.ai/query';
+const API_KEY = '8895035d-0dd9-43ab-97a0-9aed70bb885d';  // Sua chave de API
+const DETECT_URL = 'https://ai-detect.undetectable.ai/detect';  // URL da API de detecção
+const QUERY_URL = 'https://ai-detect.undetectable.ai/query';  // URL da API de consulta
 
-export async function detectAIText(text: string) {
-    const response = await fetch(DETECT_URL, {
-        method: 'POST',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            text: text,
-            key: API_KEY,
-            model: 'xlm_ud_detector',
-            retry_count: 0
-        })
+// Função de detecção
+export async function detectAI(text: string) {
+  try {
+    const response = await axios.post(DETECT_URL, {
+      text: text,
+      key: API_KEY,
+      model: 'xlm_ud_detector',
+      retry_count: 0
     });
 
-    if (!response.ok) {
-        throw new Error('Failed to detect AI text');
-    }
-
-    return await response.json();
+    return response.data;  // Retorna os dados da resposta da API
+  } catch (error) {
+    console.error('Erro ao enviar o texto para a API de detecção:', error);
+    throw new Error('Falha ao tentar detectar IA');
+  }
 }
 
-export async function queryDetectionResult(id: string) {
-    const response = await fetch(QUERY_URL, {
-        method: 'POST',
-        headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            id: id
-        })
+// Função de consulta
+export async function queryAIResult(id: string) {
+  try {
+    const response = await axios.post(QUERY_URL, {
+      key: API_KEY,
+      id: id  // ID da detecção
     });
 
-    if (!response.ok) {
-        throw new Error('Failed to query detection result');
-    }
-
-    return await response.json();
+    return response.data;  // Retorna os dados da resposta da consulta
+  } catch (error) {
+    console.error('Erro ao consultar o resultado:', error);
+    throw new Error('Falha ao consultar o resultado da detecção');
+  }
 }
